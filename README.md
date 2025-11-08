@@ -27,12 +27,12 @@ Build your site, then generate redirects:
 ```bash
 # With Jupyter Book 2
 jupyter book build --html 
-uv run https://raw.githubusercontent.com/jupyter/governance/main/jb1-redirect-generator/generate_redirects.py \
+uv run https://raw.githubusercontent.com/jupyter-book/jb1-redirect-generator/main/generate_redirects.py \
   --base-url https://example.com/
 
 # With MyST CLI
 myst build --html
-uv run https://raw.githubusercontent.com/jupyter/governance/main/jb1-redirect-generator/generate_redirects.py \
+uv run https://raw.githubusercontent.com/jupyter-book/jb1-redirect-generator/main/generate_redirects.py \
   --base-url https://example.com/
 ```
 
@@ -103,4 +103,4 @@ jobs:
 
 ## Credits
 
-Inspired by [Silas Santini's](https://github.com/pancakereport) work in the [data-8/textbook](https://github.com/data-8/textbook) repository.
+Inspired by [Silas Santini's](https://github.com/pancakereport) work in the [data-8/textbook](https://github.com/data-8/textbook) repository. Originally written for the [Jupyter Governance documentation](https://github.com/jupyter/governance).
