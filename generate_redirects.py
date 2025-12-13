@@ -206,13 +206,11 @@ def generate_redirects(
     count = 0
     for file_path in file_paths:
         # Old URL: path/to/file.md -> path/to/file.html
-        # Old URLs have leading numbers and dashes removed only from the filename
-        # and not from the directories
+        # Old URLs have leading numbers and dashes removed
+        parts = old_slug.split('/')
+        parts = [part.strip('-') for part in parts]
+        old_slug = '/'.join(parts)
         old_slug = file_path.replace('.md', '.html').replace('.ipynb', '.html')
-        parts = old_slug.split("/")
-        # clean or keep original
-        parts[-1] = re.sub(r'^[\d-]+-', '', parts[-1]) or parts[-1]
-        old_slug = "/".join(parts)
         
         # New URL: path/to/file.md -> /path/to/file/
         path_without_ext = file_path.replace('.md', '').replace('.ipynb', '')
