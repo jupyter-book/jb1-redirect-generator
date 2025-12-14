@@ -71,6 +71,10 @@ def sanitize_for_myst_url(path: str) -> str:
         'multiple-special'
         >>> sanitize_for_myst_url("charters/MediaStrategyCharter")
         'charters/mediastrategycharter'
+        >>> sanitize_for_myst_url("content/01-demand/01-demand")
+        'content/demand/demand'
+        >>> sanitize_for_myst_url("content/chapters/01/01_decisions_and_errors")
+        'content/chapters/01/decisions_and_errors'
     """
     # Convert to lowercase
     slug = path.lower()
@@ -80,6 +84,10 @@ def sanitize_for_myst_url(path: str) -> str:
 
     # Collapse multiple consecutive hyphens
     slug = re.sub(r'-+', '-', slug)
+
+    # Remove leading numbers and hyphens, accounting for cases
+    # where a number is the entire name
+    slug = "/".join([re.sub(r'^[\d-]+', '', s) or s for s in slug.split('/')])
 
     # Strip leading/trailing hyphens from each path component
     # This preserves directory structure while cleaning each component
@@ -198,8 +206,13 @@ def generate_redirects(
     count = 0
     for file_path in file_paths:
         # Old URL: path/to/file.md -> path/to/file.html
+        # Old URLs have leading numbers and dashes removed
         old_slug = file_path.replace('.md', '.html').replace('.ipynb', '.html')
-
+        parts = old_slug.split('/')
+        parts = [part.strip('-') for part in parts]
+        old_slug = '/'.join(parts)
+        old_slug = file_path.replace('.md', '.html').replace('.ipynb', '.html')
+        
         # New URL: path/to/file.md -> /path/to/file/
         path_without_ext = file_path.replace('.md', '').replace('.ipynb', '')
         new_slug = sanitize_for_myst_url(path_without_ext)
