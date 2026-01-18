@@ -14,7 +14,11 @@ URLs to MyST/Jupyter Book v2 URLs, including edge cases.
 Run with: uv run test_examples.py
 """
 
-from generate_redirects import sanitize_for_myst_url
+from generate_redirects import generate_redirect_html_content, sanitize_for_myst_url
+
+
+def print_line():
+    print("=" * 80)
 
 
 def test_url_transformations():
@@ -33,7 +37,7 @@ def test_url_transformations():
     ]
 
     print("Testing URL transformations:")
-    print("=" * 80)
+    print_line()
 
     all_passed = True
     for input_file, expected_slug, description in test_cases:
@@ -52,7 +56,7 @@ def test_url_transformations():
             )
             all_passed = False
 
-    print("=" * 80)
+    print_line()
 
     if all_passed:
         print("✨ All tests passed!")
@@ -66,22 +70,11 @@ def test_redirect_html_example():
     """Show example of generated redirect HTML."""
 
     print("\nExample redirect HTML for 'overview.html':")
-    print("=" * 80)
+    print_line()
 
-    html = """<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="refresh" content="0; url=https://example.com/overview/">
-    <meta charset="utf-8">
-    <title>Redirecting...</title>
-</head>
-<body>
-    <p>This page has moved. Redirecting to <a href="https://example.com/overview/">https://example.com/overview/</a></p>
-</body>
-</html>"""
-
+    html = generate_redirect_html_content("https://example.com/overview/")
     print(html)
-    print("=" * 80)
+    print_line()
 
 
 if __name__ == "__main__":

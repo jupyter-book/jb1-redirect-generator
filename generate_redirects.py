@@ -99,6 +99,29 @@ def sanitize_for_myst_url(path: str) -> str:
     return slug
 
 
+def generate_redirect_html_content(new_url: str) -> str:
+    """Generate HTML redirect content with meta refresh tag.
+
+    Args:
+        new_url: The new URL to redirect to (e.g., 'https://example.com/overview/')
+
+    Returns:
+        HTML string for the redirect page
+    """
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="0; url={new_url}">
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <p>This page has moved. Redirecting to <a href="{new_url}">{new_url}</a></p>
+</body>
+</html>
+"""
+
+
 def create_redirect_html(old_slug: str, new_url: str, output_root: Path) -> Path:
     """Create an HTML redirect file with meta refresh tag.
 
@@ -114,19 +137,8 @@ def create_redirect_html(old_slug: str, new_url: str, output_root: Path) -> Path
     output_file = output_root / old_slug
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    # Write a simple HTML redirect
-    html = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="refresh" content="0; url={new_url}">
-    <meta charset="utf-8">
-    <title>Redirecting...</title>
-</head>
-<body>
-    <p>This page has moved. Redirecting to <a href="{new_url}">{new_url}</a></p>
-</body>
-</html>
-"""
+    # Generate and write the redirect HTML
+    html = generate_redirect_html_content(new_url)
     output_file.write_text(html)
     return output_file
 
