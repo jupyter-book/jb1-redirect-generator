@@ -1,10 +1,17 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "pyyaml>=6.0",
+#     "click>=8.0",
+# ]
+# ///
 """Simple test examples demonstrating URL transformations.
 
 This script shows how the redirect generator transforms Jupyter Book v1
 URLs to MyST/Jupyter Book v2 URLs, including edge cases.
 
-Run with: python test_examples.py
+Run with: uv run test_examples.py
 """
 
 from generate_redirects import sanitize_for_myst_url
