@@ -14,73 +14,65 @@ URLs to MyST/Jupyter Book v2 URLs, including edge cases.
 Run with: uv run test_examples.py
 """
 
+import unittest
+
 from generate_redirects import generate_redirect_html_content, sanitize_for_myst_url
 
 
-def print_line():
-    print("=" * 80)
-
-
-def test_url_transformations():
+class TestURLTransformations(unittest.TestCase):
     """Test URL sanitization against various edge cases."""
 
-    test_cases = [
-        # (input_file, expected_slug, description)
-        ("overview.md", "overview", "Basic file"),
-        ("Test_File.md", "test-file", "Underscores to hyphens"),
-        ("TestMixedCase.md", "testmixedcase", "Mixed case to lowercase"),
-        ("Test With Spaces.md", "test-with-spaces", "Spaces to hyphens"),
-        ("_LeadingUnderscore.md", "leadingunderscore", "Strip leading underscore"),
-        ("Multiple___Special.md", "multiple-special", "Collapse multiple hyphens"),
-        ("charters/MediaStrategy.md", "charters/mediastrategy", "Nested directory"),
-        ("nested/Test_File.md", "nested/test-file", "Nested with underscores"),
-    ]
+    def test_basic_file(self):
+        result = sanitize_for_myst_url("overview")
+        self.assertEqual(result, "overview")
 
-    print("Testing URL transformations:")
-    print_line()
+    def test_underscores_to_hyphens(self):
+        result = sanitize_for_myst_url("Test_File")
+        self.assertEqual(result, "test-file")
 
-    all_passed = True
-    for input_file, expected_slug, description in test_cases:
-        # Remove extension to simulate file path processing
-        input_path = input_file.replace(".md", "")
-        result = sanitize_for_myst_url(input_path)
+    def test_mixed_case_to_lowercase(self):
+        result = sanitize_for_myst_url("TestMixedCase")
+        self.assertEqual(result, "testmixedcase")
 
-        passed = result == expected_slug
-        status = "✓" if passed else "✗"
+    def test_spaces_to_hyphens(self):
+        result = sanitize_for_myst_url("Test With Spaces")
+        self.assertEqual(result, "test-with-spaces")
 
-        if passed:
-            print(f"{status} {description:30} | {input_file:30} → /{result}/")
-        else:
-            print(
-                f"{status} {description:30} | {input_file:30} → /{result}/ (expected: /{expected_slug}/)"
-            )
-            all_passed = False
+    def test_strip_leading_underscore(self):
+        result = sanitize_for_myst_url("_LeadingUnderscore")
+        self.assertEqual(result, "leadingunderscore")
 
-    print_line()
+    def test_collapse_multiple_hyphens(self):
+        result = sanitize_for_myst_url("Multiple___Special")
+        self.assertEqual(result, "multiple-special")
 
-    if all_passed:
-        print("✨ All tests passed!")
-        return 0
-    else:
-        print("❌ Some tests failed")
-        return 1
+    def test_nested_directory(self):
+        result = sanitize_for_myst_url("charters/MediaStrategy")
+        self.assertEqual(result, "charters/mediastrategy")
+
+    def test_nested_with_underscores(self):
+        result = sanitize_for_myst_url("nested/Test_File")
+        self.assertEqual(result, "nested/test-file")
 
 
-def test_redirect_html_example():
-    """Show example of generated redirect HTML."""
+class TestRedirectHTML(unittest.TestCase):
+    """Test HTML redirect generation."""
 
-    print("\nExample redirect HTML for 'overview.html':")
-    print_line()
+    def test_redirect_html_content(self):
+        url = "https://example.com/overview/"
+        html = generate_redirect_html_content(url)
 
-    html = generate_redirect_html_content("https://example.com/overview/")
-    print(html)
-    print_line()
+        self.assertIn('meta http-equiv="refresh"', html)
+        self.assertIn(f"url={url}", html)
+        self.assertIn(f'href="{url}"', html)
+        self.assertIn(url, html)
+
+    def test_redirect_html_structure(self):
+        html = generate_redirect_html_content("https://example.com/test/")
+
+        self.assertIn("<!DOCTYPE html>", html)
+        self.assertIn("<title>Redirecting...</title>", html)
 
 
 if __name__ == "__main__":
-    import sys
-
-    exit_code = test_url_transformations()
-    test_redirect_html_example()
-
-    sys.exit(exit_code)
+    unittest.main()
