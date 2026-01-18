@@ -236,6 +236,9 @@ def generate_redirects(
         old_slug = file_path.replace(".md", ".html").replace(".ipynb", ".html")
         parts = old_slug.split("/")
         parts = [part.strip("-") for part in parts]
+        # index files effectively use the new URL structure already, so skip
+        if parts[-1] == "index.html":
+            continue
         old_slug = "/".join(parts)
 
         # New URL: path/to/file.md -> /path/to/file/
