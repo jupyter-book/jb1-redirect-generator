@@ -108,10 +108,23 @@ def generate_redirect_html_content(new_url: str) -> str:
     Returns:
         HTML string for the redirect page
     """
+
+    # based on
+    # https://github.com/documatt/sphinx-reredirects/blob/c73481d284833b755728b5b8ad75e37922d30a13/sphinx_reredirects/__init__.py#L23
     return f"""<!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="refresh" content="0; url={new_url}">
+    <noscript>
+        <meta http-equiv="refresh" content="0; url={new_url}">
+    </noscript>
+    <script>
+        const target = "{new_url}";
+        if (window.location.hash) {{
+            window.location.replace(target + window.location.hash);
+        }} else {{
+            window.location.replace(target);
+        }}
+    </script>
     <meta charset="utf-8">
     <title>Redirecting...</title>
 </head>
