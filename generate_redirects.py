@@ -279,4 +279,4 @@ def main(base_url: str, output_dir: Path, myst_config: Path):
 
 
 if __name__ == "__main__":
-    main()
+    main()  # type: ignore
