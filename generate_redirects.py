@@ -237,7 +237,6 @@ def generate_redirects(
         parts = old_slug.split("/")
         parts = [part.strip("-") for part in parts]
         old_slug = "/".join(parts)
-        old_slug = file_path.replace(".md", ".html").replace(".ipynb", ".html")
 
         # New URL: path/to/file.md -> /path/to/file/
         path_without_ext = file_path.replace(".md", "").replace(".ipynb", "")
