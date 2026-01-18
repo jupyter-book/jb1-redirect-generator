@@ -72,6 +72,7 @@ class TestRedirectHTML(unittest.TestCase):
 
         self.assertIn("<!DOCTYPE html>", html)
         self.assertIn("<title>Redirecting...</title>", html)
+        self.assertIn("window.location.replace(", html)
 
 
 if __name__ == "__main__":
