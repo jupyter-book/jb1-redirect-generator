@@ -31,7 +31,7 @@ def test_url_transformations():
     all_passed = True
     for input_file, expected_slug, description in test_cases:
         # Remove extension to simulate file path processing
-        input_path = input_file.replace('.md', '')
+        input_path = input_file.replace(".md", "")
         result = sanitize_for_myst_url(input_path)
 
         passed = result == expected_slug
@@ -40,7 +40,9 @@ def test_url_transformations():
         if passed:
             print(f"{status} {description:30} | {input_file:30} → /{result}/")
         else:
-            print(f"{status} {description:30} | {input_file:30} → /{result}/ (expected: /{expected_slug}/)")
+            print(
+                f"{status} {description:30} | {input_file:30} → /{result}/ (expected: /{expected_slug}/)"
+            )
             all_passed = False
 
     print("=" * 80)

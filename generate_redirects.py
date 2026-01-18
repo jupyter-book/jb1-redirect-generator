@@ -16,13 +16,14 @@ Usage:
 
 Inspired by Silas Santini's work in the data-8/textbook repository.
 """
+
 import re
 import sys
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-import yaml
 import click
+import yaml
 
 
 def flatten_toc(toc: List[Dict[str, Any]]) -> List[str]:
@@ -36,10 +37,10 @@ def flatten_toc(toc: List[Dict[str, Any]]) -> List[str]:
     """
     files = []
     for item in toc:
-        if 'file' in item:
-            files.append(item['file'])
-        if 'children' in item:
-            files.extend(flatten_toc(item['children']))
+        if "file" in item:
+            files.append(item["file"])
+        if "children" in item:
+            files.extend(flatten_toc(item["children"]))
     return files
 
 
@@ -80,20 +81,20 @@ def sanitize_for_myst_url(path: str) -> str:
     slug = path.lower()
 
     # Replace spaces and underscores with hyphens
-    slug = slug.replace(' ', '-').replace('_', '-')
+    slug = slug.replace(" ", "-").replace("_", "-")
 
     # Collapse multiple consecutive hyphens
-    slug = re.sub(r'-+', '-', slug)
+    slug = re.sub(r"-+", "-", slug)
 
     # Remove leading numbers and hyphens, accounting for cases
     # where a number is the entire name
-    slug = "/".join([re.sub(r'^[\d-]+', '', s) or s for s in slug.split('/')])
+    slug = "/".join([re.sub(r"^[\d-]+", "", s) or s for s in slug.split("/")])
 
     # Strip leading/trailing hyphens from each path component
     # This preserves directory structure while cleaning each component
-    parts = slug.split('/')
-    parts = [part.strip('-') for part in parts]
-    slug = '/'.join(parts)
+    parts = slug.split("/")
+    parts = [part.strip("-") for part in parts]
+    slug = "/".join(parts)
 
     return slug
 
@@ -149,10 +150,10 @@ def load_myst_toc(myst_config_path: Path) -> List[str]:
     with open(myst_config_path) as f:
         config = yaml.safe_load(f)
 
-    if 'project' not in config or 'toc' not in config['project']:
+    if "project" not in config or "toc" not in config["project"]:
         raise KeyError("MyST config must have 'project.toc' structure")
 
-    return flatten_toc(config['project']['toc'])
+    return flatten_toc(config["project"]["toc"])
 
 
 def discover_myst_config() -> Path:
@@ -165,8 +166,8 @@ def discover_myst_config() -> Path:
         FileNotFoundError: If myst.yml not found in any common location
     """
     common_locations = [
-        Path('./myst.yml'),
-        Path('./docs/myst.yml'),
+        Path("./myst.yml"),
+        Path("./docs/myst.yml"),
     ]
 
     for location in common_locations:
@@ -186,8 +187,8 @@ def generate_redirects(
 ) -> int:
     """Generate redirect files based on MyST configuration."""
     # Ensure base_url ends with /
-    if not base_url.endswith('/'):
-        base_url += '/'
+    if not base_url.endswith("/"):
+        base_url += "/"
 
     # Load file paths from MyST TOC
     file_paths = load_myst_toc(myst_config_path)
@@ -199,7 +200,7 @@ def generate_redirects(
     # Auto-detect index file: the first file in the TOC is the landing page
     index_file_path = file_paths[0]
     index_slug = sanitize_for_myst_url(
-        index_file_path.replace('.md', '').replace('.ipynb', '')
+        index_file_path.replace(".md", "").replace(".ipynb", "")
     )
 
     # Generate redirects for each file
@@ -207,18 +208,18 @@ def generate_redirects(
     for file_path in file_paths:
         # Old URL: path/to/file.md -> path/to/file.html
         # Old URLs have leading numbers and dashes removed
-        old_slug = file_path.replace('.md', '.html').replace('.ipynb', '.html')
-        parts = old_slug.split('/')
-        parts = [part.strip('-') for part in parts]
-        old_slug = '/'.join(parts)
-        old_slug = file_path.replace('.md', '.html').replace('.ipynb', '.html')
-        
+        old_slug = file_path.replace(".md", ".html").replace(".ipynb", ".html")
+        parts = old_slug.split("/")
+        parts = [part.strip("-") for part in parts]
+        old_slug = "/".join(parts)
+        old_slug = file_path.replace(".md", ".html").replace(".ipynb", ".html")
+
         # New URL: path/to/file.md -> /path/to/file/
-        path_without_ext = file_path.replace('.md', '').replace('.ipynb', '')
+        path_without_ext = file_path.replace(".md", "").replace(".ipynb", "")
         new_slug = sanitize_for_myst_url(path_without_ext)
 
         # The first file in the TOC becomes the root index
-        new_url = base_url if new_slug == index_slug else base_url + new_slug + '/'
+        new_url = base_url if new_slug == index_slug else base_url + new_slug + "/"
 
         create_redirect_html(old_slug, new_url, output_root)
         click.echo(f"{old_slug} -> {new_url}")
@@ -229,21 +230,21 @@ def generate_redirects(
 
 @click.command()
 @click.option(
-    '--base-url',
+    "--base-url",
     required=True,
-    help='Base URL of the website (e.g., https://jupyter.org/governance/)',
+    help="Base URL of the website (e.g., https://jupyter.org/governance/)",
 )
 @click.option(
-    '--output-dir',
+    "--output-dir",
     type=click.Path(path_type=Path),
-    default='_build/html',
-    help='Directory where redirect files will be created (default: _build/html)',
+    default="_build/html",
+    help="Directory where redirect files will be created (default: _build/html)",
 )
 @click.option(
-    '--myst-config',
+    "--myst-config",
     type=click.Path(exists=True, path_type=Path),
     default=None,
-    help='Path to the myst.yml configuration file (default: auto-discover)',
+    help="Path to the myst.yml configuration file (default: auto-discover)",
 )
 def main(base_url: str, output_dir: Path, myst_config: Path):
     """Generate HTML redirect files for Jupyter Book v1 to MyST migration."""
